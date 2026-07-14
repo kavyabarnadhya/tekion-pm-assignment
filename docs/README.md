@@ -4,6 +4,8 @@ Orchestration scenario that receives a payment request from Tekion, generates a 
 
 Built in **Make.com**. See `docs/ASSUMPTIONS.md` for design decisions and documented gotchas, `docs/demo-script.md` for the video walkthrough script, and `make-variant/make-variant-notes.md` for the module-by-module build reference.
 
+**Landing page**: https://tekion-payment-link-workflow.vercel.app
+**Live scenario (view-only)**: https://us2.make.com/public/shared-scenario/1LNjHnuqvpF/tekion-payment-link-generation-workflow
 **Demo video**: [PASTE GOOGLE DRIVE LINK HERE] (ensure sharing is set to "Anyone with the link" before submitting)
 
 ## Architecture
@@ -14,7 +16,7 @@ flowchart TD
     B -- No --> B1[Log failed record\nstatus: failed]
     B -- Yes --> C[Data Store: Get Record by referenceId]
     C --> D{payment_link already exists?}
-    D -- Yes --> D1[Return existing link\nidempotent replay]
+    D -- Yes --> D1[Idempotent End\nreturn existing link]
     D -- No --> E[Map fields: flat -> nested\ncompute expire_by]
     E --> F[HTTP: Call Payment Link API]
     F -- permanent failure / retries exhausted --> F1[Log failed record]
