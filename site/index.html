@@ -90,13 +90,13 @@
   <header class="hero">
     <div class="kicker">Tekion · PM-2 Integrations · Take-home submission</div>
     <h1>Payment Link Generation Workflow</h1>
-    <p class="sub">An orchestration layer that lets dealerships generate a shareable payment link for a customer directly from their management system — receiving the request, calling a Payment Link API, and writing the result back to the payment record.</p>
+    <p class="sub">An orchestration layer that lets dealerships generate a shareable payment link for a customer directly from their management system. It receives the request, calls a Payment Link API, and writes the result back to the payment record.</p>
   </header>
 
   <section>
     <h2><span class="num">1</span>Business problem</h2>
     <div class="card">
-      <p>Dealerships currently lack the ability to generate shareable payment links for customers directly within their management system. This creates friction in the payment collection process — a customer service order gets closed, but collecting payment means a manual, out-of-system step.</p>
+      <p>Dealerships currently lack the ability to generate shareable payment links for customers directly within their management system. This creates friction in the payment collection process: a customer service order gets closed, but collecting payment still means a manual, out-of-system step.</p>
       <p style="margin-bottom:0">Tekion aims to bridge this gap by integrating with a payment link generation service through an orchestration layer, so a payment link can be generated and the record updated without leaving the dealership's system of record.</p>
     </div>
   </section>
@@ -141,19 +141,19 @@ flowchart TD
     <div class="decisions">
       <div class="decision">
         <h3>Idempotency by referenceId</h3>
-        <p><code>referenceId</code> is the idempotency key for the whole workflow. Before calling the Payment Link API, the scenario looks up any existing record for that reference. If one already has a <code>payment_link</code>, the workflow short-circuits and returns the existing link — preventing a retried or duplicate Tekion request from generating two live payment links for the same invoice.</p>
+        <p><code>referenceId</code> is the idempotency key for the whole workflow. Before calling the Payment Link API, the scenario looks up any existing record for that reference. If one already has a <code>payment_link</code>, it returns the existing link instead, so a retried or duplicate Tekion request can't generate two live payment links for the same invoice.</p>
       </div>
       <div class="decision">
-        <h3>GET-with-body on the Update API (deliberate, not a bug)</h3>
-        <p>The spec defines the Update API as a <code>GET</code> request carrying a JSON body — non-standard REST. The workflow mirrors this exactly rather than silently substituting a POST, and documents the tension explicitly rather than "fixing" it.</p>
+        <h3>GET-with-body on the Update API</h3>
+        <p>The spec defines the Update API as a <code>GET</code> request carrying a JSON body, which is non-standard REST. The workflow mirrors this exactly instead of quietly substituting a POST, and calls out the tension rather than pretending it's not there.</p>
       </div>
       <div class="decision">
-        <h3>Retry via Make's native mechanism, not a hand-rolled loop</h3>
-        <p>Rather than building a custom retry-counter loop, the scenario uses Make's <strong>Store incomplete executions</strong> setting: automatic exponential backoff on transient failures (timeouts, 5xx), straight-through to error-handler logging on permanent failures (4xx). Chosen deliberately over added complexity for a mock API that isn't actually flaky in a way a hard attempt cap would improve.</p>
+        <h3>Retry via Make's native mechanism</h3>
+        <p>Instead of a custom retry-counter loop, the scenario uses Make's <strong>Store incomplete executions</strong> setting: automatic exponential backoff on transient failures (timeouts, 5xx), straight through to error-handler logging on permanent failures (4xx). That's less code for a mock API that isn't flaky in a way a hard attempt cap would actually improve.</p>
       </div>
       <div class="decision">
         <h3>Flat-to-nested field mapping</h3>
-        <p>Tekion's flat payload (<code>customerName</code>, <code>customerPhone</code>, <code>customerEmail</code>) is mapped into the Payment Link API's nested <code>customer</code> object, with optional fields (like email) omitted rather than sent as null when absent.</p>
+        <p>Tekion's flat payload (<code>customerName</code>, <code>customerPhone</code>, <code>customerEmail</code>) gets mapped into the Payment Link API's nested <code>customer</code> object. Optional fields like email are left out entirely rather than sent as null when absent.</p>
       </div>
     </div>
   </section>
@@ -161,10 +161,10 @@ flowchart TD
   <section>
     <h2><span class="num">5</span>Tested results</h2>
     <div class="tested">
-      <div class="tested-row"><span class="check">✓</span><div><strong>Happy path</strong> — full valid payload ran end-to-end, <code>PaymentRecords</code> updated with a real <code>payment_link</code> and <code>status: updated</code>.</div></div>
-      <div class="tested-row"><span class="check">✓</span><div><strong>Missing-field validation</strong> — payload with a required field dropped correctly routed to failure logging; downstream modules skipped.</div></div>
-      <div class="tested-row"><span class="check">✓</span><div><strong>Idempotency replay</strong> — re-sending the same <code>referenceId</code> short-circuited at the lookup step; Payment Link API was not called a second time.</div></div>
-      <div class="tested-row"><span class="check">✓</span><div><strong>API-failure error handling</strong> — a real Payment Link API failure was caught and logged with <code>status: failed</code> and an error reason.</div></div>
+      <div class="tested-row"><span class="check">✓</span><div><strong>Happy path:</strong> full valid payload ran end-to-end, <code>PaymentRecords</code> updated with a real <code>payment_link</code> and <code>status: updated</code>.</div></div>
+      <div class="tested-row"><span class="check">✓</span><div><strong>Missing-field validation:</strong> payload with a required field dropped correctly routed to failure logging, downstream modules skipped.</div></div>
+      <div class="tested-row"><span class="check">✓</span><div><strong>Idempotency replay:</strong> re-sending the same <code>referenceId</code> stopped at the lookup step, Payment Link API wasn't called a second time.</div></div>
+      <div class="tested-row"><span class="check">✓</span><div><strong>API-failure error handling:</strong> a real Payment Link API failure was caught and logged with <code>status: failed</code> and an error reason.</div></div>
     </div>
   </section>
 
@@ -176,7 +176,7 @@ flowchart TD
         <a class="btn" href="https://github.com/kavyabarnadhya/tekion-pm-assignment" target="_blank" rel="noopener">Open repo →</a>
       </div>
       <div class="link-row">
-        <div><div class="label">Workflow export (blueprint.json)</div><div class="desc">Make.com scenario export — importable source of truth</div></div>
+        <div><div class="label">Workflow export (blueprint.json)</div><div class="desc">Make.com scenario export, importable source of truth</div></div>
         <a class="btn" href="https://github.com/kavyabarnadhya/tekion-pm-assignment/blob/main/make-variant/blueprint.json" target="_blank" rel="noopener">View JSON →</a>
       </div>
       <div class="link-row">
@@ -184,7 +184,7 @@ flowchart TD
         <a class="btn" href="https://github.com/kavyabarnadhya/tekion-pm-assignment/blob/main/docs/README.md" target="_blank" rel="noopener">Read README →</a>
       </div>
       <div class="link-row">
-        <div><div class="label">Demo video</div><div class="desc">Screen-recorded walkthrough — architecture, live runs, and a real bug fixed on camera</div></div>
+        <div><div class="label">Demo video</div><div class="desc">Screen-recorded walkthrough covering architecture, live runs, and a real bug fixed on camera</div></div>
         <a class="btn pending" href="#">Link coming soon</a>
       </div>
       <div class="link-row">
