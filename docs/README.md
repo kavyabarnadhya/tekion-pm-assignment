@@ -4,9 +4,9 @@ Orchestration scenario that receives a payment request from Tekion, generates a 
 
 Built in **Make.com**. See `docs/ASSUMPTIONS.md` for design decisions and documented gotchas, `docs/demo-script.md` for the video walkthrough script, and `make-variant/make-variant-notes.md` for the module-by-module build reference.
 
-**Landing page**: https://tekion-payment-link-workflow.vercel.app
-**Live scenario (view-only)**: https://us2.make.com/public/shared-scenario/1LNjHnuqvpF/tekion-payment-link-generation-workflow
-**Demo video**: [PASTE GOOGLE DRIVE LINK HERE] (ensure sharing is set to "Anyone with the link" before submitting)
+- **Landing page**: https://tekion-payment-link-workflow.vercel.app
+- **Live scenario (view-only)**: https://us2.make.com/public/shared-scenario/1LNjHnuqvpF/tekion-payment-link-generation-workflow
+- **Demo video**: [PASTE GOOGLE DRIVE LINK HERE] (ensure sharing is set to "Anyone with the link" before submitting)
 
 ## Architecture
 

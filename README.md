@@ -2,9 +2,9 @@
 
 **Tekion PM-2 Integrations take-home submission.** An orchestration workflow that lets dealerships generate a shareable payment link for a customer directly from their management system — built and tested end-to-end in Make.com.
 
-**Live landing page:** https://tekion-payment-link-workflow.vercel.app
-**Live Make scenario (view-only):** https://us2.make.com/public/shared-scenario/1LNjHnuqvpF/tekion-payment-link-generation-workflow
-**Demo video:** _link to be added_
+- **Live landing page:** https://tekion-payment-link-workflow.vercel.app
+- **Live Make scenario (view-only):** https://us2.make.com/public/shared-scenario/1LNjHnuqvpF/tekion-payment-link-generation-workflow
+- **Demo video:** _link to be added_
 
 ## What's in this repo
 
