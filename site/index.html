@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Payment Link Generation Workflow — Tekion</title>
+<meta name="description" content="Integration workflow: Tekion payment request → Payment Link API → Update API, built in Make.com." />
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-alt: #f6f7f9;
+    --text: #1a1d23;
+    --text-muted: #5b6270;
+    --border: #e3e5e9;
+    --accent: #7c3aed;
+    --accent-bg: #f3ecfd;
+    --ok: #0f9d58;
+    --code-bg: #f0f1f4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14161a;
+      --bg-alt: #1b1e24;
+      --text: #e7e9ee;
+      --text-muted: #9aa1ad;
+      --border: #2a2e36;
+      --accent: #a78bfa;
+      --accent-bg: #2a2140;
+      --ok: #4ade80;
+      --code-bg: #1f2229;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14161a; --bg-alt: #1b1e24; --text: #e7e9ee; --text-muted: #9aa1ad;
+    --border: #2a2e36; --accent: #a78bfa; --accent-bg: #2a2140; --ok: #4ade80; --code-bg: #1f2229;
+  }
+  :root[data-theme="light"] {
+    --bg: #ffffff; --bg-alt: #f6f7f9; --text: #1a1d23; --text-muted: #5b6270;
+    --border: #e3e5e9; --accent: #7c3aed; --accent-bg: #f3ecfd; --ok: #0f9d58; --code-bg: #f0f1f4;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+    line-height: 1.55;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 48px 24px 96px; }
+  header.hero { padding: 8px 0 32px; border-bottom: 1px solid var(--border); margin-bottom: 40px; }
+  .kicker { color: var(--accent); font-weight: 600; font-size: 0.85rem; letter-spacing: 0.06em; text-transform: uppercase; }
+  h1 { font-size: 2rem; margin: 8px 0 12px; line-height: 1.2; }
+  .sub { color: var(--text-muted); font-size: 1.05rem; max-width: 640px; }
+  section { margin-bottom: 44px; }
+  h2 { font-size: 1.3rem; margin: 0 0 14px; display: flex; align-items: center; gap: 10px; }
+  h2 .num { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: var(--accent-bg); color: var(--accent); font-size: 0.8rem; font-weight: 700; flex-shrink: 0; }
+  p { color: var(--text-muted); }
+  strong { color: var(--text); }
+  .card { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; }
+  ul.clean { margin: 0; padding-left: 20px; }
+  ul.clean li { margin-bottom: 8px; color: var(--text-muted); }
+  ul.clean li strong { color: var(--text); }
+  table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { color: var(--text-muted); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; }
+  td { color: var(--text-muted); }
+  td strong, td code { color: var(--text); }
+  code { background: var(--code-bg); padding: 2px 6px; border-radius: 4px; font-size: 0.88em; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+  .decisions { display: grid; gap: 14px; }
+  .decision { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+  .decision h3 { margin: 0 0 6px; font-size: 1rem; }
+  .decision p { margin: 0; font-size: 0.94rem; }
+  .tested { display: grid; gap: 10px; }
+  .tested-row { display: flex; align-items: flex-start; gap: 10px; background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; }
+  .tested-row .check { color: var(--ok); font-weight: 700; flex-shrink: 0; }
+  .links { display: grid; gap: 12px; }
+  .link-row { display: flex; justify-content: space-between; align-items: center; gap: 16px; background: var(--bg-alt); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; }
+  .link-row .label { font-weight: 600; }
+  .link-row .desc { color: var(--text-muted); font-size: 0.88rem; margin-top: 2px; }
+  .link-row a.btn { flex-shrink: 0; background: var(--accent); color: white; text-decoration: none; padding: 8px 16px; border-radius: 8px; font-size: 0.88rem; font-weight: 600; }
+  .link-row a.btn.pending { background: var(--border); color: var(--text-muted); pointer-events: none; }
+  .mermaid { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 10px; padding: 20px; overflow-x: auto; }
+  footer { color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border); padding-top: 24px; margin-top: 60px; }
+  footer a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="kicker">Tekion · PM-2 Integrations · Take-home submission</div>
+    <h1>Payment Link Generation Workflow</h1>
+    <p class="sub">An orchestration layer that lets dealerships generate a shareable payment link for a customer directly from their management system — receiving the request, calling a Payment Link API, and writing the result back to the payment record.</p>
+  </header>
+
+  <section>
+    <h2><span class="num">1</span>Business problem</h2>
+    <div class="card">
+      <p>Dealerships currently lack the ability to generate shareable payment links for customers directly within their management system. This creates friction in the payment collection process — a customer service order gets closed, but collecting payment means a manual, out-of-system step.</p>
+      <p style="margin-bottom:0">Tekion aims to bridge this gap by integrating with a payment link generation service through an orchestration layer, so a payment link can be generated and the record updated without leaving the dealership's system of record.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">2</span>High-level PRD</h2>
+    <div class="card">
+      <p><strong>Objective:</strong> Configure an integration workflow that receives payment request data from Tekion, generates a payment link via an external API, and updates the payment record in the system.</p>
+      <p><strong>Scope:</strong></p>
+      <ul class="clean">
+        <li>Receive payment request data from Tekion (customer info, amount, invoice number)</li>
+        <li>Call the Payment Link API to generate a payment link</li>
+        <li>Extract response fields (<code>payment_link</code>, <code>ID</code>, <code>referenceId</code>)</li>
+        <li>Update the payment record via the Update API</li>
+        <li>Implement error handling for all failure scenarios</li>
+      </ul>
+      <p style="margin-bottom:0"><strong>Success criteria:</strong> all five scope items working end-to-end against the provided mock APIs, with idempotency (no duplicate links on retried requests) and graceful, logged failure handling rather than silent drops.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">3</span>Architecture</h2>
+    <div class="mermaid">
+flowchart TD
+    A[Webhook: Tekion Payment Request] --> B{Required fields present?}
+    B -- No --> B1[Log failed record\nstatus: failed]
+    B -- Yes --> C[Data Store: Get Record by referenceId]
+    C --> D{payment_link already exists?}
+    D -- Yes --> D1[Idempotent End\nreturn existing link]
+    D -- No --> E[Map fields: flat -> nested\ncompute expire_by]
+    E --> F[HTTP: Call Payment Link API]
+    F -- permanent failure / retries exhausted --> F1[Log failed record]
+    F -- success --> G[Parse response:\npayment_link, ID, referenceId]
+    G --> H[HTTP: Call Update API]
+    H -- permanent failure / retries exhausted --> H1[Log failed record]
+    H -- success --> I[Data Store: Upsert record\nstatus: updated]
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">4</span>Key design decisions</h2>
+    <div class="decisions">
+      <div class="decision">
+        <h3>Idempotency by referenceId</h3>
+        <p><code>referenceId</code> is the idempotency key for the whole workflow. Before calling the Payment Link API, the scenario looks up any existing record for that reference. If one already has a <code>payment_link</code>, the workflow short-circuits and returns the existing link — preventing a retried or duplicate Tekion request from generating two live payment links for the same invoice.</p>
+      </div>
+      <div class="decision">
+        <h3>GET-with-body on the Update API (deliberate, not a bug)</h3>
+        <p>The spec defines the Update API as a <code>GET</code> request carrying a JSON body — non-standard REST. The workflow mirrors this exactly rather than silently substituting a POST, and documents the tension explicitly rather than "fixing" it.</p>
+      </div>
+      <div class="decision">
+        <h3>Retry via Make's native mechanism, not a hand-rolled loop</h3>
+        <p>Rather than building a custom retry-counter loop, the scenario uses Make's <strong>Store incomplete executions</strong> setting: automatic exponential backoff on transient failures (timeouts, 5xx), straight-through to error-handler logging on permanent failures (4xx). Chosen deliberately over added complexity for a mock API that isn't actually flaky in a way a hard attempt cap would improve.</p>
+      </div>
+      <div class="decision">
+        <h3>Flat-to-nested field mapping</h3>
+        <p>Tekion's flat payload (<code>customerName</code>, <code>customerPhone</code>, <code>customerEmail</code>) is mapped into the Payment Link API's nested <code>customer</code> object, with optional fields (like email) omitted rather than sent as null when absent.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">5</span>Tested results</h2>
+    <div class="tested">
+      <div class="tested-row"><span class="check">✓</span><div><strong>Happy path</strong> — full valid payload ran end-to-end, <code>PaymentRecords</code> updated with a real <code>payment_link</code> and <code>status: updated</code>.</div></div>
+      <div class="tested-row"><span class="check">✓</span><div><strong>Missing-field validation</strong> — payload with a required field dropped correctly routed to failure logging; downstream modules skipped.</div></div>
+      <div class="tested-row"><span class="check">✓</span><div><strong>Idempotency replay</strong> — re-sending the same <code>referenceId</code> short-circuited at the lookup step; Payment Link API was not called a second time.</div></div>
+      <div class="tested-row"><span class="check">✓</span><div><strong>API-failure error handling</strong> — a real Payment Link API failure was caught and logged with <code>status: failed</code> and an error reason.</div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">6</span>Deliverables</h2>
+    <div class="links">
+      <div class="link-row">
+        <div><div class="label">GitHub repository</div><div class="desc">Full source: Make blueprint, design docs, assumptions, setup instructions</div></div>
+        <a class="btn" href="https://github.com/kavyabarnadhya/tekion-pm-assignment" target="_blank" rel="noopener">Open repo →</a>
+      </div>
+      <div class="link-row">
+        <div><div class="label">Workflow export (blueprint.json)</div><div class="desc">Make.com scenario export — importable source of truth</div></div>
+        <a class="btn" href="https://github.com/kavyabarnadhya/tekion-pm-assignment/blob/main/make-variant/blueprint.json" target="_blank" rel="noopener">View JSON →</a>
+      </div>
+      <div class="link-row">
+        <div><div class="label">Setup & execution instructions</div><div class="desc">Import steps, webhook trigger, sample requests, tested results</div></div>
+        <a class="btn" href="https://github.com/kavyabarnadhya/tekion-pm-assignment/blob/main/docs/README.md" target="_blank" rel="noopener">Read README →</a>
+      </div>
+      <div class="link-row">
+        <div><div class="label">Demo video</div><div class="desc">Screen-recorded walkthrough — architecture, live runs, and a real bug fixed on camera</div></div>
+        <a class="btn pending" href="#">Link coming soon</a>
+      </div>
+      <div class="link-row">
+        <div><div class="label">Live Make scenario (optional)</div><div class="desc">Direct view link to the scenario in Make, if you'd like to inspect it interactively</div></div>
+        <a class="btn" href="https://us2.make.com/public/shared-scenario/1LNjHnuqvpF/tekion-payment-link-generation-workflow" target="_blank" rel="noopener">View scenario →</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Built by Kavya Barnadhya for the Tekion PM-2 Integrations take-home assignment · <a href="https://github.com/kavyabarnadhya/tekion-pm-assignment" target="_blank" rel="noopener">source on GitHub</a>
+  </footer>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+  const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  mermaid.initialize({ startOnLoad: true, theme: isDark ? 'dark' : 'default' });
+</script>
+</body>
+</html>
