@@ -10,9 +10,9 @@ Pull up the Mermaid diagram from `docs/README.md`, or the live Make canvas since
 Walk it left to right: "Webhook receives the request, we validate required fields, check for an existing link so we don't double-generate one, map the flat Tekion fields into the nested shape the Payment Link API expects, call it, extract the link, call the Update API to write it back, and persist the final record. Every external call has error handling, and transient failures get automatic retry with backoff."
 
 ## 3. Live demo, happy path (60s)
-- Trigger the webhook with the sample payload (`curl` command from README, or Make's "Run once" plus pasted JSON).
+- Trigger the webhook with the `TS4021` sample payload (Postman collection, curl command from README, or Make's "Run once" plus pasted JSON). Use `TS4021`, not `TS1989` — `TS1989` was already sent during testing and will short-circuit to the idempotency path instead of a fresh run.
 - Show the execution log lighting up module by module.
-- Open the `PaymentRecords` Data Store and show the new record: `referenceId: TS1989`, `payment_link`, `status: updated`.
+- Open the `PaymentRecords` Data Store and show the new record: `referenceId: TS4021`, `payment_link`, `status: updated`.
 
 ## 4. A real bug hit and fixed (30s)
 
@@ -26,7 +26,7 @@ Two quick sub-demos:
 - **API failure**: already covered in beat 4. Mention that the error-handler path (module 21) correctly logged a `failed` record on that real API failure before the fix.
 
 ## 6. Idempotency demo (20s)
-Re-send the exact same `TS1989` payload. Show the Data Store lookup (module 6) finding the existing record and the scenario short-circuiting to module 17 ("Idempotent End"), so the Payment Link API isn't called a second time. Explain why: "this stops a duplicate Tekion request from generating two live payment links for the same invoice."
+Re-send the exact same `TS4021` payload from beat 3. Show the Data Store lookup (module 6) finding the existing record and the scenario short-circuiting to module 17 ("Idempotent End"), so the Payment Link API isn't called a second time. Explain why: "this stops a duplicate Tekion request from generating two live payment links for the same invoice."
 
 ## 7. Close (20s)
 Call out the two design decisions worth flagging:

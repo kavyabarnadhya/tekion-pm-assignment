@@ -77,12 +77,12 @@ curl -X POST "<your-webhook-url>" \
     "invoiceNumber": "INV_10234",
     "paymentAmount": 1000,
     "currency": "INR",
-    "referenceId": "TS1989",
+    "referenceId": "TS4021",
     "description": "Payment for service order INV_10234"
   }'
 ```
 
-Click **Run Once** on the scenario in Make before sending each request — the webhook only catches one request per click.
+Click **Run Once** on the scenario in Make before sending each request — the webhook only catches one request per click. Note: `referenceId: TS4021` has never been sent before, so the first send is a genuine end-to-end run. `TS1989` was used during our own testing and already has a stored `payment_link`, which is why it's the example in "Tested results" below for the idempotency case rather than the happy path.
 
 ### Tested results
 
