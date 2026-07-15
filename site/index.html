@@ -185,12 +185,28 @@ flowchart TD
       </div>
       <div class="link-row">
         <div><div class="label">Demo video</div><div class="desc">Screen-recorded walkthrough covering architecture, live runs, and a real bug fixed on camera</div></div>
-        <a class="btn pending" href="#">Link coming soon</a>
+        <a class="btn" href="https://drive.google.com/file/d/1r95rzdrvE8bXSrJ2S_HaZoFMTyHmxXsY/view?usp=sharing" target="_blank" rel="noopener">Watch video →</a>
       </div>
       <div class="link-row">
         <div><div class="label">Live Make scenario (optional)</div><div class="desc">Direct view link to the scenario in Make, if you'd like to inspect it interactively</div></div>
         <a class="btn" href="https://us2.make.com/public/shared-scenario/1LNjHnuqvpF/tekion-payment-link-generation-workflow" target="_blank" rel="noopener">View scenario →</a>
       </div>
+      <div class="link-row">
+        <div><div class="label">Postman collection</div><div class="desc">Three ready-made requests to test the live webhook yourself: happy path, missing-field validation, idempotency replay</div></div>
+        <a class="btn" href="https://github.com/kavyabarnadhya/tekion-pm-assignment/blob/main/postman-collection.json" target="_blank" rel="noopener">Get collection →</a>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">7</span>Try it yourself</h2>
+    <div class="card">
+      <p>Import the Postman collection above, then in Make click <strong>Run Once</strong> before sending each request (the webhook only catches one request per click).</p>
+      <ul class="clean">
+        <li><strong>Happy path:</strong> send a request with a <code>referenceId</code> that's never been used before. That's the only field that matters here, everything else can stay the same.</li>
+        <li><strong>Duplicate / idempotency:</strong> send that exact same request a second time. It short-circuits at the lookup step instead of calling the Payment Link API again.</li>
+        <li><strong>Missing field:</strong> use the "Missing field" request as-is, or take any request and remove a required field, like <code>paymentAmount</code>.</li>
+      </ul>
     </div>
   </section>
 

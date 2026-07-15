@@ -6,7 +6,8 @@ Built in **Make.com**. See `docs/ASSUMPTIONS.md` for design decisions and docume
 
 - **Landing page**: https://tekion-payment-link-workflow.vercel.app
 - **Live scenario (view-only)**: https://us2.make.com/public/shared-scenario/1LNjHnuqvpF/tekion-payment-link-generation-workflow
-- **Demo video**: [PASTE GOOGLE DRIVE LINK HERE] (ensure sharing is set to "Anyone with the link" before submitting)
+- **Postman collection**: [`postman-collection.json`](../postman-collection.json)
+- **Demo video**: https://drive.google.com/file/d/1r95rzdrvE8bXSrJ2S_HaZoFMTyHmxXsY/view?usp=sharing
 
 ## Architecture
 
@@ -83,6 +84,11 @@ curl -X POST "<your-webhook-url>" \
 ```
 
 Click **Run Once** on the scenario in Make before sending each request — the webhook only catches one request per click. Note: `referenceId: TS4021` has never been sent before, so the first send is a genuine end-to-end run. `TS1989` was used during our own testing and already has a stored `payment_link`, which is why it's the example in "Tested results" below for the idempotency case rather than the happy path.
+
+**To generate each path yourself:**
+- **Happy path**: send any request with a `referenceId` that's never been used before. The only field that matters for this is `referenceId` — everything else in the body can stay the same.
+- **Duplicate / idempotency**: send that exact same request a second time. It'll short-circuit at the Data Store lookup instead of calling the Payment Link API again.
+- **Missing field**: use the "Missing field" Postman request as-is, or take any request and remove a required field (e.g. `paymentAmount`, `customerName`).
 
 ### Tested results
 
