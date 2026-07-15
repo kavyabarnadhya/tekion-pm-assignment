@@ -1,0 +1,10 @@
+{
+  "contactId": "CONT_10002",
+  "customerName": "Priya Verma",
+  "customerPhone": "+919812345678",
+  "customerEmail": "priya.verma@example.com",
+  "invoiceNumber": "INV_10999",
+  "currency": "INR",
+  "referenceId": "TS9999",
+  "description": "Payment for service order INV_10999"
+}

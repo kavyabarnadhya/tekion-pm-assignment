@@ -1,0 +1,75 @@
+{
+  "info": {
+    "name": "Tekion Payment Link Workflow — Demo",
+    "description": "Test requests for the Tekion payment link generation Make.com scenario. Trigger 'Run Once' in Make before sending each request.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Happy path (TS1989)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"contactId\": \"CONT_10001\",\n  \"customerName\": \"Amit Sharma\",\n  \"customerPhone\": \"+919876543210\",\n  \"customerEmail\": \"amit.sharma@example.com\",\n  \"invoiceNumber\": \"INV_10234\",\n  \"paymentAmount\": 1000,\n  \"currency\": \"INR\",\n  \"referenceId\": \"TS1989\",\n  \"description\": \"Payment for service order INV_10234\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "https://hook.us2.make.com/d2mdczvdfwbwxvhufeexrqw7fb4ptjdt",
+          "protocol": "https",
+          "host": ["hook", "us2", "make", "com"],
+          "path": ["d2mdczvdfwbwxvhufeexrqw7fb4ptjdt"]
+        },
+        "description": "Full valid payload. Expect: scenario runs end-to-end, PaymentRecords gets a TS1989 entry with status: updated and a real payment_link."
+      },
+      "response": []
+    },
+    {
+      "name": "Missing field (TS9999)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"contactId\": \"CONT_10002\",\n  \"customerName\": \"Priya Verma\",\n  \"customerPhone\": \"+919812345678\",\n  \"customerEmail\": \"priya.verma@example.com\",\n  \"invoiceNumber\": \"INV_10999\",\n  \"currency\": \"INR\",\n  \"referenceId\": \"TS9999\",\n  \"description\": \"Payment for service order INV_10999\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "https://hook.us2.make.com/d2mdczvdfwbwxvhufeexrqw7fb4ptjdt",
+          "protocol": "https",
+          "host": ["hook", "us2", "make", "com"],
+          "path": ["d2mdczvdfwbwxvhufeexrqw7fb4ptjdt"]
+        },
+        "description": "paymentAmount deliberately omitted. Expect: module 4 fires (status: failed), module 6 skipped."
+      },
+      "response": []
+    },
+    {
+      "name": "Idempotency replay (TS1989 again)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"contactId\": \"CONT_10001\",\n  \"customerName\": \"Amit Sharma\",\n  \"customerPhone\": \"+919876543210\",\n  \"customerEmail\": \"amit.sharma@example.com\",\n  \"invoiceNumber\": \"INV_10234\",\n  \"paymentAmount\": 1000,\n  \"currency\": \"INR\",\n  \"referenceId\": \"TS1989\",\n  \"description\": \"Payment for service order INV_10234\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "https://hook.us2.make.com/d2mdczvdfwbwxvhufeexrqw7fb4ptjdt",
+          "protocol": "https",
+          "host": ["hook", "us2", "make", "com"],
+          "path": ["d2mdczvdfwbwxvhufeexrqw7fb4ptjdt"]
+        },
+        "description": "Same payload as the happy path, sent again. Expect: scenario short-circuits at the idempotency check (module 6/17), Payment Link API not called a second time."
+      },
+      "response": []
+    }
+  ]
+}

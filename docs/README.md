@@ -62,6 +62,10 @@ flowchart TD
 Open module 1 (Custom Webhook) → copy its URL. This is your trigger endpoint.
 
 ### 3. Trigger it
+
+**Option A: Postman.** Import [`postman-collection.json`](../postman-collection.json) — it has three ready-made requests (happy path, missing-field validation, idempotency replay) pointed at the webhook URL used during testing. Update the URL to your own if you imported the blueprint into a different Make account.
+
+**Option B: curl.**
 ```bash
 curl -X POST "<your-webhook-url>" \
   -H "Content-Type: application/json" \
@@ -77,6 +81,8 @@ curl -X POST "<your-webhook-url>" \
     "description": "Payment for service order INV_10234"
   }'
 ```
+
+Click **Run Once** on the scenario in Make before sending each request — the webhook only catches one request per click.
 
 ### Tested results
 

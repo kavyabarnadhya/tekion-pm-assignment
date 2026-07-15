@@ -16,6 +16,8 @@
 | [`make-variant/blueprint.json`](make-variant/blueprint.json) | The Make.com scenario export, importable and tested working |
 | [`make-variant/make-variant-notes.md`](make-variant/make-variant-notes.md) | Module-by-module build reference and verified test results |
 | [`site/`](site/) | Static landing page (deployed to Vercel above) covering the problem, design, and deliverables in one place |
+| [`postman-collection.json`](postman-collection.json) | Import into Postman to test the live webhook yourself: happy path, missing-field validation, idempotency replay |
+| `sample-payload-*.json` | The raw request bodies used above, for testing via curl or any other HTTP client |
 
 ## Quick summary
 

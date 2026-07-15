@@ -1,0 +1,11 @@
+{
+  "contactId": "CONT_10001",
+  "customerName": "Amit Sharma",
+  "customerPhone": "+919876543210",
+  "customerEmail": "amit.sharma@example.com",
+  "invoiceNumber": "INV_10234",
+  "paymentAmount": 1000,
+  "currency": "INR",
+  "referenceId": "TS1989",
+  "description": "Payment for service order INV_10234"
+}
